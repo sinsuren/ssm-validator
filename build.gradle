@@ -1,0 +1,58 @@
+plugins {
+    id 'java-gradle-plugin' // Applies the Gradle plugin for creating plugins
+    id 'maven-publish' // For publishing the plugin to a repository (like Gradle Plugin Portal)
+    id 'groovy' // If you are using Groovy for your plugin classes
+    id 'com.gradle.plugin-publish' version '0.18.0'
+}
+
+group = 'com.sinsuren.ssm-validator' // Set the group for your plugin
+version = '1.0.0' // Set the version of your plugin
+
+gradlePlugin {
+    plugins {
+        create("ssmValidatorPlugin") {
+            id = "com.sinsuren.ssm-validator" // Plugin ID to be used in build scripts
+            implementationClass = "com.sinsuren.ssm.validator.SSMValidatorPlugin" // The main plugin class
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/sinsuren/ssm-validator'
+    vcsUrl = 'https://github.com/sinsuren/ssm-validator'  // URL to the GitHub repo
+    description = 'A plugin to validate SSM keys between source and destination files.'  // Short description
+    tags = ['ssm', 'validator', 'gradle']  // Tags for better searchability
+}
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+dependencies {
+    implementation gradleApi() // Required to interact with Gradle APIs
+    implementation localGroovy() // Required if you're using Groovy
+
+    testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0' // Example testing dependency for Spock
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0' // Example testing dependency for JUnit 5
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0' // Example testing dependency for JUnit 5
+}
+
+publishing {
+//    publications {
+//        pluginMaven(MavenPublication) {
+//            from components.java
+//            artifactId = 'ssm-validator-gradle' // Artifact ID for the plugin
+//        }
+//    }
+    repositories {
+        maven {
+            name = "GradlePluginPortal"
+            url = uri("https://plugins.gradle.org/m2/") // URL for Gradle Plugin Portal
+            credentials {
+                username = project.findProperty("gradlePluginUser") ?: System.getenv("GRADLE_PLUGIN_USER")
+                password = project.findProperty("gradlePluginPassword") ?: System.getenv("GRADLE_PLUGIN_PASSWORD")
+            }
+        }
+    }
+}
